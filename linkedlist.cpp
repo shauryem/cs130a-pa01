@@ -58,10 +58,10 @@ linkedlist::~linkedlist(){
 void linkedlist::mulPoly(linkedlist& l2){
 
     linkedlist newList;
-    Node * p1 = new Node;
-    Node * p2 = new Node;
-    p1 = this->head;
-    p2 = l2.head;
+    Node * p1 = this->head
+    Node * p2 = l2.head;
+    //p1 = this->head;
+    //p2 = l2.head;
 
     while(p1 != NULL){
         p2 = l2.head;
@@ -71,6 +71,10 @@ void linkedlist::mulPoly(linkedlist& l2){
         }
         p1 = p1->next;
     }
+
+    
+    p1 = NULL;
+    p2 = NULL;
 
     writePoly(newList);
     
@@ -158,8 +162,7 @@ void linkedlist::addNode(int c, int e){
 }
 
 void writePoly(linkedlist& writtenLL){
-    Node *p = new Node;
-    p = writtenLL.head;
+    Node *p = writtenLL.head;
     string temp = "";
     while(p != NULL){
         temp += to_string(p->coeff);
@@ -169,7 +172,8 @@ void writePoly(linkedlist& writtenLL){
         p = p->next;
     }
     temp = temp.substr(0, temp.length()-1);
-    
+    p = NULL;
+
     cout<<temp;
 }
 
