@@ -16,6 +16,9 @@ public:
         exp =0;
         next = NULL;
     }
+    ~Node(){
+        next = NULL;
+    }
 };
 
 class linkedlist{
@@ -29,19 +32,93 @@ public:
         head = NULL;
         tail = NULL;
     }
-    ~linkedlist() {};
+    ~linkedlist();
     void addNode(int c, int e);
     friend void readPoly(string in);
-    friend void writePoly(linkedlist writtenLL);
+    friend void writePoly(linkedlist& writtenLL);
+    void mulPoly(linkedlist& l2);
+    void addPoly(linkedlist& l2);
 
 
     
 };
 
+linkedlist::~linkedlist(){
+
+    Node* p1 = this->head;
+    Node* tmp;
+    while(p1) {
+        tmp = p1;
+        p1 = p1->next;
+        delete tmp;
+    }
+    head = NULL;
+    tail = NULL;
+}
+void linkedlist::mulPoly(linkedlist& l2){
+
+    linkedlist newList;
+    Node * p1 = new Node;
+    Node * p2 = new Node;
+    p1 = this->head;
+    p2 = l2.head;
+
+    while(p1 != NULL){
+        p2 = l2.head;
+        while(p2 != NULL){
+           newList.addNode((p1->coeff * p2->coeff) % 1000000, (p1->exp + p2->exp) % 10000);
+            p2 = p2->next;
+        }
+        p1 = p1->next;
+    }
+
+    writePoly(newList);
+    
+
+}
+void linkedlist::addPoly(linkedlist& l2){
+    
+    
+    
+    linkedlist newList;
+    Node * p1 = new Node;
+    Node * p2 = new Node;
+    p1 = this->head;
+    p2 = l2.head;
+
+
+    while(p1 != NULL && p2 != NULL){
+        if(p1->exp > p2->exp){
+            newList.addNode(p2->coeff, p2->exp);
+            p2 = p2->next;
+        }
+        else if(p1->exp < p2->exp){
+            newList.addNode(p1->coeff, p1->exp);
+            p1 = p1->next;
+        }
+        else{
+            newList.addNode((p1->coeff + p2->coeff) % 1000000, p1->exp);
+            p1 = p1->next;
+            p2 = p2->next;
+        }
+    }
+    while(p1 != NULL){
+        newList.addNode(p1->coeff, p1->exp);
+        p1 = p1->next;
+    }
+    while(p2 != NULL){
+        newList.addNode(p2->coeff, p2->exp);
+        p2 = p2->next;
+    }
+
+
+    writePoly(newList);
+}
+
 void linkedlist::addNode(int c, int e){
 
     Node* temp = new Node;
-    temp->coeff = c;
+    temp->coeff = c % 1000000;
     temp->exp = e; 
     temp->next == NULL;
 
@@ -50,13 +127,50 @@ void linkedlist::addNode(int c, int e){
         tail = temp;
         temp = NULL;
     }
-    else{
+    // add at start
+    else if(temp->exp < head->exp){
+        temp->next = head;
+        head = temp;
+    }
+    // add at end
+    else if(temp->exp > tail->exp){
         tail->next = temp;
         tail = temp;
     }
+    else{
+        Node* p = new Node;
+        p = head;
+        while(p->next != NULL && temp->exp > p->exp){
+            p = p->next;
+        }
+        if(temp->exp = p->exp){
+            p->coeff = (p->coeff + temp->coeff) % 1000000;
+            delete temp;
+        }
+        else{
+            temp->next = p->next;
+            p->next = temp;
+        }
+    }
+    
 
 
+}
 
+void writePoly(linkedlist& writtenLL){
+    Node *p = new Node;
+    p = writtenLL.head;
+    string temp = "";
+    while(p != NULL){
+        temp += to_string(p->coeff);
+        temp += " ";
+        temp += to_string(p->exp);
+        temp += " "; 
+        p = p->next;
+    }
+    temp = temp.substr(0, temp.length()-1);
+    
+    cout<<temp;
 }
 
 void readPoly(string in){
@@ -149,6 +263,36 @@ void readPoly(string in){
         }
          
 
+        if(in.find("**") != string::npos){
+            linkedlist squ;
+            Node * temp = new Node;
+            temp = l1.head;
+
+            while(temp != NULL){
+                squ.addNode(temp->coeff, temp->exp);
+                temp = temp->next;
+            }
+
+            l1.mulPoly(squ);
+        }   
+
+        else if(in.find('*') != string::npos){
+            l1.mulPoly(l2);
+        }
+
+        else if(in.find('+') != string::npos){
+            l1.addPoly(l2);
+        }
+   /* Node *p = new Node;
+    p = l2.head;
+    while(p != NULL){
+        cout<<p->exp;
+        cout<<"\n";
+        cout<<p->coeff;
+        cout<<"\n";
+
+        p = p->next;
+  */  
         
 
     
@@ -156,9 +300,15 @@ void readPoly(string in){
 }
 
 
-int main(){
+int main(int argv, char** argc){
 
-    readPoly("1 2 3 4 6 7 * 7 8 9 8 0 6");
+        if( argv != 2)  {
+            return 1;
+        }
+
+        readPoly(argc[1]);
+        
+        return 0;
 }
 
 
