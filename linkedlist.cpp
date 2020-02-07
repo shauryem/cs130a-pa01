@@ -58,7 +58,7 @@ linkedlist::~linkedlist(){
 void linkedlist::mulPoly(linkedlist& l2){
 
     linkedlist newList;
-    Node * p1 = this->head
+    Node * p1 = this->head;
     Node * p2 = l2.head;
     //p1 = this->head;
     //p2 = l2.head;
